@@ -57,20 +57,15 @@ export class StorageService {
   }
 
   async registrarBaixa(codigo: string, descricao: string, qtd: number, medida: string, setor: string, motivo: string) {
-    // Pega a hora exata do sistema no formato internacional (ISO)
-    // Esse formato é o único que o DatePipe do Angular nunca falha em ler.
-    const dataHoraExata = new Date().toISOString();
-
-    await this.supabase.from('baixas').insert([{
+    const { error } = await this.supabase.from('baixas').insert([{
       codigo, 
       descricao, 
       qtd, 
       medida, 
       setor, 
-      motivo,
-      created_at: dataHoraExata, // Força o envio da data pra coluna padrão do Supabase
-      dataHora: dataHoraExata    // Envia também pra coluna antiga (se você tiver criado)
+      motivo
     }]);
+    if (error) console.error("Erro ao registrar baixa:", error);
   }
 
   async removerBaixa(index: number) {
