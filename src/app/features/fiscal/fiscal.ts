@@ -1,12 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { DecimalPipe, DatePipe } from '@angular/common';
+import { DecimalPipe, DatePipe } from '@angular/common'; // <-- Adicionado DatePipe
 import { StorageService } from '../../core/services/storage';
 
 @Component({
   selector: 'app-fiscal',
   standalone: true,
-  imports: [FormsModule, DecimalPipe, DatePipe],
+  imports: [FormsModule, DecimalPipe, DatePipe], // <-- Adicionado DatePipe
   template: `
     <div class="min-h-[calc(100vh-70px)] py-6 sm:py-8 px-4 sm:px-6 lg:px-8 font-sans transition-colors duration-200 bg-slate-50/50">
       <div class="max-w-[90rem] mx-auto animate-in fade-in duration-700 flex flex-col h-full">
@@ -38,6 +38,7 @@ import { StorageService } from '../../core/services/storage';
         </div>
         
         <div class="shrink-0 bg-white/80 backdrop-blur-xl p-3 sm:p-4 rounded-[1.5rem] border border-slate-200 shadow-lg shadow-slate-200/50 mb-6 flex flex-col lg:flex-row items-center justify-between gap-4">
+          
           <div class="w-full lg:w-auto relative group">
             <select [(ngModel)]="filtroSetor" class="w-full lg:w-[300px] appearance-none bg-slate-50 border-2 border-slate-100 hover:border-slate-200 text-slate-700 font-bold px-4 py-3 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all cursor-pointer shadow-sm text-sm">
               <option value="Todos">📑 Filtro: Todos os Setores</option>
@@ -58,7 +59,9 @@ import { StorageService } from '../../core/services/storage';
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
               Limpar Base
             </button>
+            
             <div class="h-8 w-px bg-slate-200 hidden sm:block mx-1"></div>
+            
             @if(filtroSetor !== 'Todos') {
               <button (click)="exportarTxt(true)" class="w-full sm:w-auto px-6 py-3 rounded-xl font-black text-xs bg-gradient-to-r from-indigo-500 to-violet-600 text-white shadow-lg shadow-indigo-200 hover:scale-[1.02] transition-all flex items-center justify-center gap-2 uppercase tracking-widest border border-indigo-400/50">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
@@ -134,6 +137,7 @@ import { StorageService } from '../../core/services/storage';
             </table>
           </div>
         </div>
+
       </div>
     </div>
   `
@@ -147,22 +151,24 @@ export class FiscalComponent {
     return this.storage.baixas().filter(b => b.setor === this.filtroSetor);
   }
 
+  // Calculadoras para os Mini KPIs
   totalUn() {
-    return this.baixasFiltradas().filter(b => b.medida === 'UN').reduce((a, b) => a + (b.qtd || 0), 0);
+    return this.baixasFiltradas().filter(b => b.medida === 'UN').reduce((a, b) => a + b.qtd, 0);
   }
   
   totalKg() {
-    return this.baixasFiltradas().filter(b => b.medida === 'KG').reduce((a, b) => a + (b.qtd || 0), 0);
+    return this.baixasFiltradas().filter(b => b.medida === 'KG').reduce((a, b) => a + b.qtd, 0);
   }
 
   excluirReal(item: any) {
+    // Usando o ID do Supabase para garantir a exclusão correta
     if (confirm(`Confirmar exclusão definitiva de "${item.descricao}"?`)) {
       this.storage.removerBaixa(item.id);
     }
   }
 
   limparTela() {
-    if (confirm('⚠️ ATENÇÃO: Esta ação apagará permanentemente TODAS as baixas. Deseja prosseguir?')) {
+    if (confirm('⚠️ ATENÇÃO: Esta ação apagará permanentemente TODAS as baixas de todos os setores. Deseja prosseguir?')) {
       this.storage.limparBaixas();
     }
   }
@@ -173,10 +179,10 @@ export class FiscalComponent {
 
     const titulo = apenasFiltrado ? `SETOR: ${this.filtroSetor.toUpperCase()}` : 'TODOS OS SETORES';
     let txt = "CIMI SUPERMERCADOS - RELATÓRIO DE BAIXAS\n";
-    txt += `GERADO EM: ${new Date().toLocaleString('pt-BR')} | ${titulo}\n`;
-    txt += "=".repeat(125) + "\n";
-    txt += "COD".padEnd(10) + "DESCRIÇÃO".padEnd(35) + "SETOR".padEnd(20) + "MOTIVO".padEnd(16) + "QTD".padEnd(10) + "UN".padEnd(5) + "DATA/HORA\n";
-    txt += "-".repeat(125) + "\n";
+    txt += `DATA: ${new Date().toLocaleString('pt-BR')} | ${titulo}\n`;
+    txt += "=".repeat(110) + "\n";
+    txt += "COD".padEnd(10) + "DESCRIÇÃO".padEnd(35) + "SETOR".padEnd(20) + "MOTIVO".padEnd(16) + "QTD".padEnd(10) + "UN".padEnd(5) + "HORA\n";
+    txt += "-".repeat(110) + "\n";
 
     dados.forEach(b => {
       const cod = (b.codigo || '').toString().padEnd(10);
@@ -186,19 +192,23 @@ export class FiscalComponent {
       const qtd = (b.qtd || 0).toString().padEnd(10);
       const med = (b.medida || 'UN').padEnd(5);
       
-      let dataFormatada = '';
+      // Tratamento robusto de data para o TXT
+      let hora = '';
       const dataBruta = b.created_at || b.dataHora;
-      
       if (dataBruta) {
-        const dt = new Date(dataBruta);
-        if (!isNaN(dt.getTime())) {
-          dataFormatada = dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        if (dataBruta.includes('T')) {
+          const dt = new Date(dataBruta);
+          hora = dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        } else if (dataBruta.includes(',')) {
+          hora = dataBruta.split(',')[1].trim();
+        } else if (dataBruta.includes(' ')) {
+          hora = dataBruta.split(' ')[1].trim();
         } else {
-          dataFormatada = dataBruta;
+          hora = dataBruta;
         }
       }
 
-      txt += `${cod}${desc}${setor}${motivo}${qtd}${med}${dataFormatada}\n`;
+      txt += `${cod}${desc}${setor}${motivo}${qtd}${med}${hora}\n`;
     });
 
     const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
@@ -212,7 +222,7 @@ export class FiscalComponent {
 
     if (!apenasFiltrado) {
       setTimeout(() => { 
-        if (confirm('Arquivo Completo baixado!\nDeseja limpar a tela para iniciar uma nova sessão?')) {
+        if (confirm('Arquivo Completo baixado com sucesso!\nDeseja limpar a tela (apagar base atual) para iniciar uma nova sessão?')) {
           this.storage.limparBaixas(); 
         }
       }, 500);
