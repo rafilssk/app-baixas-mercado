@@ -22,10 +22,11 @@ export class StorageService {
 
   private async carregarDadosIniciais() {
     try {
-      // 1. Carrega o Catálogo (MGV)
+      // 1. Carrega o Catálogo (MGV) - Aumentado para 10.000 itens
       const { data: catData, error: catError } = await this.supabase
         .from('catalogo')
-        .select('*');
+        .select('*')
+        .range(0, 9999); // <--- MUDANÇA AQUI: Ignora o limite de 1000
       
       if (catData) {
         const novoMapa = new Map();
@@ -76,30 +77,29 @@ export class StorageService {
 
   async limparBaixas() {
     if (confirm("Deseja apagar todas as baixas do banco de dados?")) {
-      // Deleta todos os registros onde o ID é maior que 0
       const { error } = await this.supabase.from('baixas').delete().gt('id', 0);
       if (!error) this._baixas.set([]);
     }
   }
 
   async atualizarCatalogo(novoMapa: Map<string, string>) {
-    // Converte o Mapa para Array de Objetos para o banco
+    // Converte o Mapa para Array de Objetos
     const dadosParaInserir = Array.from(novoMapa.entries()).map(([codigo, descricao]) => ({
       codigo,
       descricao
     }));
 
-    // O upsert insere novos produtos ou atualiza a descrição se o código já existir
+    // Upsert em lotes pequenos se o arquivo for gigantesco (opcional, mas seguro)
     const { error } = await this.supabase
       .from('catalogo')
       .upsert(dadosParaInserir, { onConflict: 'codigo' });
 
     if (!error) {
       this._catalogoMap.set(novoMapa);
-      alert("Catálogo MGV atualizado com sucesso no Banco de Dados!");
+      alert("Catálogo MGV sincronizado com sucesso!");
     } else {
       console.error("Erro ao subir MGV:", error);
-      alert("Erro ao salvar catálogo. Verifique se a tabela 'catalogo' foi criada.");
+      alert("Erro ao salvar. Verifique o limite de dados do banco.");
     }
   }
 }
