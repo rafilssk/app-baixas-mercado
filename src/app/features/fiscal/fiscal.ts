@@ -1,12 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { DecimalPipe } from '@angular/common';
+import { DecimalPipe, DatePipe } from '@angular/common'; // <-- Adicionado DatePipe
 import { StorageService } from '../../core/services/storage';
 
 @Component({
   selector: 'app-fiscal',
   standalone: true,
-  imports: [FormsModule, DecimalPipe],
+  imports: [FormsModule, DecimalPipe, DatePipe], // <-- Adicionado DatePipe
   template: `
     <div class="min-h-[calc(100vh-70px)] py-6 sm:py-8 px-4 sm:px-6 lg:px-8 font-sans transition-colors duration-200 bg-slate-50/50">
       <div class="max-w-[90rem] mx-auto animate-in fade-in duration-700 flex flex-col h-full">
@@ -89,7 +89,7 @@ import { StorageService } from '../../core/services/storage';
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-100">
-                @for(item of baixasFiltradas(); track $index) {
+                @for(item of baixasFiltradas(); track item.id || $index) {
                   <tr class="hover:bg-slate-50/80 transition-colors group">
                     <td class="px-6 py-3.5">
                       <span class="block font-black text-slate-700 text-[13px] leading-tight mb-0.5 truncate max-w-[350px]" title="{{ item.descricao }}">{{ item.descricao }}</span>
@@ -110,7 +110,7 @@ import { StorageService } from '../../core/services/storage';
                     <td class="px-6 py-3.5">
                       <div class="flex items-center gap-2 text-slate-400 font-mono text-xs font-bold">
                         <svg class="w-3.5 h-3.5 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        {{ item.dataHora.split(' ')[1] || item.dataHora }}
+                        {{ (item.created_at || item.dataHora) | date:'HH:mm' }}
                       </div>
                     </td>
                     <td class="px-6 py-3.5 text-right">
@@ -161,9 +161,9 @@ export class FiscalComponent {
   }
 
   excluirReal(item: any) {
-    const idx = this.storage.baixas().findIndex(b => b === item);
-    if (idx !== -1 && confirm(`Confirmar exclusão definitiva de "${item.descricao}"?`)) {
-      this.storage.removerBaixa(idx);
+    // Usando o ID do Supabase para garantir a exclusão correta
+    if (confirm(`Confirmar exclusão definitiva de "${item.descricao}"?`)) {
+      this.storage.removerBaixa(item.id);
     }
   }
 
@@ -192,9 +192,21 @@ export class FiscalComponent {
       const qtd = (b.qtd || 0).toString().padEnd(10);
       const med = (b.medida || 'UN').padEnd(5);
       
-      let hora = b.dataHora || '';
-      if (hora.includes(',')) hora = hora.split(',')[1].trim();
-      else if (hora.includes(' ')) hora = hora.split(' ')[1].trim();
+      // Tratamento robusto de data para o TXT
+      let hora = '';
+      const dataBruta = b.created_at || b.dataHora;
+      if (dataBruta) {
+        if (dataBruta.includes('T')) {
+          const dt = new Date(dataBruta);
+          hora = dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        } else if (dataBruta.includes(',')) {
+          hora = dataBruta.split(',')[1].trim();
+        } else if (dataBruta.includes(' ')) {
+          hora = dataBruta.split(' ')[1].trim();
+        } else {
+          hora = dataBruta;
+        }
+      }
 
       txt += `${cod}${desc}${setor}${motivo}${qtd}${med}${hora}\n`;
     });
