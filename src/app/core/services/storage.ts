@@ -7,7 +7,7 @@ import { getDatabase, ref, onValue, push, remove, set } from 'firebase/database'
 const firebaseConfig = {
   apiKey: "SUA_API_KEY",
   authDomain: "SEU_PROJETO.firebaseapp.com",
-  databaseURL: "SUA_URL_DO_DATABASE", // Aquela URL que você copiou no Passo 1
+  databaseURL: "https://console.firebase.google.com/project/cimibaixas-49842/overview", // Aquela URL que você copiou no Passo 1
   projectId: "SEU_ID",
   storageBucket: "SEU_PROJETO.appspot.com",
   messagingSenderId: "ID_SENDER",
