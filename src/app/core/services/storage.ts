@@ -5,13 +5,13 @@ import { getDatabase, ref, onValue, push, remove, set } from 'firebase/database'
 // ⚠️ COLE AQUI AS SUAS CREDENCIAIS DO FIREBASE 
 // (Você as encontra em: Configurações do Projeto > Seus Aplicativos > Configuração)
 const firebaseConfig = {
-  apiKey: "SUA_API_KEY",
-  authDomain: "SEU_PROJETO.firebaseapp.com",
-  databaseURL: "https://console.firebase.google.com/project/cimibaixas-49842/overview", // Aquela URL que você copiou no Passo 1
-  projectId: "SEU_ID",
-  storageBucket: "SEU_PROJETO.appspot.com",
-  messagingSenderId: "ID_SENDER",
-  appId: "ID_APP"
+  apiKey: "AIzaSyAsppVkmlk_1ernWNbl_6f_tcTs43vDdig",
+  authDomain: "cimibaixas-49842.firebaseapp.com",
+  databaseURL: "https://cimibaixas-49842-default-rtdb.firebaseio.com/", 
+  projectId: "cimibaixas-49842",
+  storageBucket: "cimibaixas-49842.firebasestorage.app",
+  messagingSenderId: "420105821355",
+  appId: "1:420105821355:web:610801aad2d90d29c3ebee"
 };
 
 @Injectable({ providedIn: 'root' })
