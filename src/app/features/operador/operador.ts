@@ -137,7 +137,7 @@ import { StorageService } from '../../core/services/storage';
                   -
                 </button>
                 <div class="relative group">
-                  <input type="number" [(ngModel)]="quantidadeAtual" 
+                  <input type="number" name="qtdAtual" [(ngModel)]="quantidadeAtual" inputmode="decimal"
                          class="w-32 sm:w-56 bg-transparent text-center text-4xl sm:text-6xl font-black focus:outline-none transition-colors duration-500 tracking-tight" 
                          [class]="medidaSelecionada === 'UN' ? 'text-emerald-600' : 'text-rose-600'">
                 </div>
@@ -174,10 +174,12 @@ import { StorageService } from '../../core/services/storage';
                 <svg class="w-8 h-8 sm:w-12 sm:h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
               </div>
               
-              <input #scannerInput type="text" [(ngModel)]="codigoAtual" (keyup.enter)="processarBip()"
-                     class="bip-input relative z-10 w-full bg-transparent text-center text-3xl sm:text-5xl md:text-6xl font-mono font-black py-4 sm:py-8 px-12 sm:px-24 lg:px-28 focus:outline-none tracking-[0.15em] transition-colors drop-shadow-lg"
-                     [class]="medidaSelecionada === 'UN' ? 'text-emerald-400 placeholder:text-emerald-900/50' : 'text-rose-400 placeholder:text-rose-900/50'"
-                     placeholder="Bipe aqui" autocomplete="off">
+              <form (ngSubmit)="processarBip()" class="relative z-10 w-full">
+                <input #scannerInput type="text" name="codigoProdutoInput" inputmode="numeric" [(ngModel)]="codigoAtual"
+                       class="bip-input w-full bg-transparent text-center text-3xl sm:text-5xl md:text-6xl font-mono font-black py-4 sm:py-8 px-12 sm:px-24 lg:px-28 focus:outline-none tracking-[0.15em] transition-colors drop-shadow-lg"
+                       [class]="medidaSelecionada === 'UN' ? 'text-emerald-400 placeholder:text-emerald-900/50' : 'text-rose-400 placeholder:text-rose-900/50'"
+                       placeholder="Bipe aqui" autocomplete="off">
+              </form>
 
               @if(alertaErro()) {
                 <div class="absolute bottom-4 left-4 right-4 sm:left-6 sm:right-6 px-3 sm:px-4 py-2 sm:py-3 bg-rose-600/95 backdrop-blur text-white rounded-xl font-bold text-[10px] sm:text-sm flex items-center justify-center gap-2 sm:gap-3 animate-in slide-in-from-bottom-2 shadow-2xl border border-rose-400 z-50">
