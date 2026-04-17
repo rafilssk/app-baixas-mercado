@@ -4,15 +4,23 @@ import { getDatabase, ref, onValue, push, remove, set } from 'firebase/database'
 
 // ⚠️ COLE AQUI AS SUAS CREDENCIAIS DO FIREBASE 
 // (Você as encontra em: Configurações do Projeto > Seus Aplicativos > Configuração)
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyAsppVkmlk_1ernWNbl_6f_tcTs43vDdig",
   authDomain: "cimibaixas-49842.firebaseapp.com",
-  databaseURL: "https://cimibaixas-49842-default-rtdb.firebaseio.com/", 
   projectId: "cimibaixas-49842",
   storageBucket: "cimibaixas-49842.firebasestorage.app",
   messagingSenderId: "420105821355",
   appId: "1:420105821355:web:610801aad2d90d29c3ebee"
 };
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
 
 @Injectable({ providedIn: 'root' })
 export class StorageService {
