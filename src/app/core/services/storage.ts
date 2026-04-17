@@ -26,7 +26,7 @@ export class StorageService {
       const { data: catData, error: catError } = await this.supabase
         .from('catalogo')
         .select('*')
-        .range(0, 9999); // <--- MUDANÇA AQUI: Ignora o limite de 1000
+        .range(0, 99999); // <--- MUDANÇA AQUI: Ignora o limite de 1000
       
       if (catData) {
         const novoMapa = new Map();
