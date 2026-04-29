@@ -22,7 +22,7 @@ export class StorageService {
 
   private async carregarDadosIniciais() {
     try {
-      // 1. Carrega o Catálogo (MGV) - Aumentado para 10.000 itens
+      // 1. Carrega o Catálogo (MGV) - Aumentado para 99.000 itens
       const { data: catData, error: catError } = await this.supabase
         .from('catalogo')
         .select('*')

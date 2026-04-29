@@ -46,6 +46,8 @@ import { StorageService } from '../../core/services/storage';
               <option value="Controle de Produção">Controle de Produção</option>
               <option value="Triagem">Triagem</option>
               <option value="Prevenção">Prevenção</option>
+               <option value="Padaria">Padaria</option>
+                <option value="Confeitaria">Confeitaria</option>
               <option value="Baixas Recepção">Baixas Recepção</option>
             </select>
             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
